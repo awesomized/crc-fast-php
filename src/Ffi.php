@@ -16,6 +16,8 @@ final class Ffi
 {
     private const string SCOPE_DEFAULT = 'CRC64NVME';
 
+    private static ?\FFI $ffi = null;
+
     /**
      * Creates a new FFI instance from the given C declarations and library name.
      *
@@ -29,10 +31,20 @@ final class Ffi
         string $code,
         ?string $library = null,
     ): \FFI {
-        return \FFI::cdef(
+        if (null !== self::$ffi) {
+            return self::$ffi;
+        }
+
+        $ffi = \FFI::cdef(
             code: $code,
             lib: $library,
         );
+
+        /** @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not */
+        // @phpstan-ignore-next-line
+        $ffi->digest_new();
+
+        return self::$ffi = $ffi;
     }
 
     /**
@@ -46,9 +58,19 @@ final class Ffi
     public static function fromPreloadScope(
         string $ffiScopeName = self::SCOPE_DEFAULT,
     ): \FFI {
-        return \FFI::scope(
+        if (null !== self::$ffi) {
+            return self::$ffi;
+        }
+
+        $ffi = \FFI::scope(
             name: $ffiScopeName,
         );
+
+        /** @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not */
+        // @phpstan-ignore-next-line
+        $ffi->digest_new();
+
+        return self::$ffi = $ffi;
     }
 
     /**
@@ -61,6 +83,10 @@ final class Ffi
     public static function fromHeaderFile(
         string $headerFile = '',
     ): \FFI {
+        if (null !== self::$ffi) {
+            return self::$ffi;
+        }
+
         if ('' === $headerFile) {
             $headerFile = self::whichHeaderFile();
         }
@@ -75,7 +101,11 @@ final class Ffi
             );
         }
 
-        return $ffi;
+        /** @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not */
+        // @phpstan-ignore-next-line
+        $ffi->digest_new();
+
+        return self::$ffi = $ffi;
     }
 
     /**
