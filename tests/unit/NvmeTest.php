@@ -23,6 +23,29 @@ final class NvmeTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \FFI\Exception
+     */
+    public function testConstructorShouldFailWithInvalidLibrary(): void
+    {
+        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
+        if (false === $code) {
+            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
+        }
+
+        $this->expectException(\FFI\Exception::class);
+
+        $ffi = \FFI::cdef(
+            code: $code,
+            lib: '',
+        );
+
+        new Crc64\Nvme(
+            crc64Nvme: $ffi,
+        );
+    }
+
+    /**
+     * @throws \InvalidArgumentException
      */
     protected function setUp(): void
     {
@@ -89,26 +112,5 @@ final class NvmeTest extends TestCase
         );
 
         self::assertNotSame('0000000000000000', $crc64);
-    }
-
-    /**
-     * @throws \InvalidArgumentException
-     * @throws \FFI\Exception
-     */
-    public function testConstructorShouldFailWithInvalidLibrary(): void
-    {
-        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
-        if (false === $code) {
-            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
-        }
-
-        $this->expectException(\FFI\Exception::class);
-
-        new Crc64\Nvme(
-            crc64Nvme: Crc64\Ffi::fromCode(
-                code: $code,
-                library: '',
-            ),
-        );
     }
 }

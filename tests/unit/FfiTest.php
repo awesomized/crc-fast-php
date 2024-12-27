@@ -16,24 +16,6 @@ final class FfiTest extends TestCase
     /**
      * @throws Exception
      */
-    public function testFfiFromCodeValidInputShouldSucceed(): void
-    {
-        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
-        if (false === $code) {
-            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
-        }
-
-        $ffi = Crc64\Ffi::fromCode(
-            code: $code,
-            library: __DIR__ . '/../../build/target/release/' . Crc64\Ffi::whichLibrary(),
-        );
-
-        $this->testFfiCalculateCrc64ShouldSucceed($ffi);
-    }
-
-    /**
-     * @throws Exception
-     */
     public function testFfiFromCodeInvalidCodeShouldFail(): void
     {
         $this->expectException(Exception::class);
@@ -51,6 +33,8 @@ final class FfiTest extends TestCase
     }
 
     /**
+     * @depends testFfiFromCodeInvalidCodeShouldFail
+     *
      * @throws Exception
      */
     public function testFfiFromCodeInvalidLibraryShouldFail(): void
@@ -75,17 +59,8 @@ final class FfiTest extends TestCase
     }
 
     /**
-     * @throws Exception
-     * @throws \InvalidArgumentException
-     */
-    public function testFfiFromHeaderValidHeaderShouldSucceed(): void
-    {
-        $ffi = Crc64\Ffi::fromHeaderFile();
-
-        $this->testFfiCalculateCrc64ShouldSucceed($ffi);
-    }
-
-    /**
+     * @depends testFfiFromCodeInvalidLibraryShouldFail
+     *
      * @throws \InvalidArgumentException
      */
     public function testFfiFromHeaderInvalidHeaderShouldFail(): void
@@ -95,6 +70,37 @@ final class FfiTest extends TestCase
         $ffi = Crc64\Ffi::fromHeaderFile(
             headerFile: __DIR__ . '/FfiTest.php',
         );
+
+        $this->testFfiCalculateCrc64ShouldSucceed($ffi);
+    }
+
+    /**
+     * @depends testFfiFromHeaderInvalidHeaderShouldFail
+     *
+     * @throws Exception
+     */
+    public function testFfiFromCodeValidInputShouldSucceed(): void
+    {
+        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
+        if (false === $code) {
+            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
+        }
+
+        $ffi = Crc64\Ffi::fromCode(
+            code: $code,
+            library: __DIR__ . '/../../build/target/release/' . Crc64\Ffi::whichLibrary(),
+        );
+
+        $this->testFfiCalculateCrc64ShouldSucceed($ffi);
+    }
+
+    /**
+     * @throws Exception
+     * @throws \InvalidArgumentException
+     */
+    public function testFfiFromHeaderValidHeaderShouldSucceed(): void
+    {
+        $ffi = Crc64\Ffi::fromHeaderFile();
 
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);
     }
