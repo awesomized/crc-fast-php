@@ -117,11 +117,16 @@ final class FfiTest extends TestCase
      */
     public function testFfiFromPreloadScopeValidScopeShouldSucceed(): void
     {
-        if (false === \ini_get('opcache.preload')) {
+        $opcachePreload = \ini_get('opcache.preload');
+        if (false === $opcachePreload || '' === $opcachePreload) {
             self::markTestSkipped('opcache.preload is not enabled.');
         }
 
-        $ffi = Crc64\Ffi::fromPreloadScope();
+        try {
+            $ffi = Crc64\Ffi::fromPreloadScope();
+        } catch (\FFI\Exception $e) {
+            self::markTestSkipped("FFI instance doesn't appear to be preloaded.");
+        }
 
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);
     }
