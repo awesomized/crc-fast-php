@@ -2,6 +2,7 @@
 name: Code Standards
 
 on:
+  # run on pushes to all branches
   push:
   workflow_dispatch:
     # used when called manually. 'secrets' are passed in automagically
@@ -21,6 +22,9 @@ on:
         default: 'dev-main'
         required: false
         type: string
+
+env:
+  COMPOSER_ROOT_VERSION: 'dev-main'
 
 jobs:
   code-standards:

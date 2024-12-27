@@ -1,8 +1,9 @@
-# Only runs on changed PHP files
-name: Code Standards (PR)
+# Runs against the entire project, not just the changed files.
+name: Static Analysis
 
 on:
-  # run on pushes to all PR requests
+  # run on pushes to all branches or all PR requests
+  push:
   pull_request:
     types: [ opened ]
   workflow_dispatch:
@@ -28,7 +29,7 @@ env:
   COMPOSER_ROOT_VERSION: 'dev-main'
 
 jobs:
-  code-standards:
+  static-analysis:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,26 +39,21 @@ jobs:
       - name: Print directory info after checkout
         run: ls -lah
 
-      - name: Get changed files
-        id: files
-        uses: Ana06/get-changed-files@v2.2.0
-        with:
-          filter: '*.php'
-
       - name: Setup PHP
-        if: steps.files.outputs.added_modified
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@verbose
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.WORKFLOW_REPO_ACCESS }}"}, "http-basic": {"repo.packagist.com": {"username": "token", "password": "${{ secrets.PACKAGIST_READ_ONLY }}"}}}'
         with:
           php-version: '8.3.12'
-          tools: cs2pr:1.8.5, composer:2.8.4, php-cs-fixer:3.65.0, phpcs:3.11.2
+          # note that psalm isn't installed here, since we use a custom fork of psalm, and is instead installed via
+          # composer, then called directly
+          tools: cs2pr:1.8.5, composer:2.8.4, phpstan/phpstan:2.0.4
           extensions: mailparse
 
       - name: Setup problem matchers for PHP
-        if: steps.files.outputs.added_modified
         run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
 
       - name: Cache Composer packages
-        if: steps.files.outputs.added_modified
         id: composer-cache
         uses: actions/cache@v3
         with:
@@ -67,24 +63,17 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install Composer dependencies
-        if: ${{ steps.files.outputs.added_modified && steps.composer-cache.outputs.cache-hit != 'true' }}
+        if: ${{ steps.composer-cache.outputs.cache-hit != 'true' }}
         env:
           # use the inputs if supplied (from being called via another workflow), supplied vars, or env as a final fallback
           COMPOSER_ROOT_VERSION: ${{ inputs.COMPOSER_ROOT_VERSION || vars.COMPOSER_ROOT_VERSION || env.COMPOSER_ROOT_VERSION }}
         run: composer install --no-interaction --no-scripts --ignore-platform-req=php+
 
-      - name: Run PHPCS
-        id: run-phpcs
-        if: steps.files.outputs.added_modified
-        run: phpcs --standard=phpcs.xml --report=checkstyle ${{ steps.files.outputs.added_modified }} | cs2pr
+      - name: Run PHPStan
+        id: run-phpstan
+        run: phpstan analyse -c phpstan.neon --error-format=checkstyle --no-progress --memory-limit=2G ${{ steps.files.outputs.added_modified }} | cs2pr
 
-      - name: Run PHP-CS-Fixer
-        id: run-php-cs-fixer
-        if: steps.files.outputs.added_modified
-        # note that we can't just operate on a list of files, due to a limitation in php-cs-fixer, so this will only
-        # report the first error found.
-        # see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues/4279
-        run: |
-          for changed_file in ${{ steps.files.outputs.all }}; do
-            php-cs-fixer fix -n --dry-run --format=checkstyle --config=.php-cs-fixer.php ${changed_file} | cs2pr
-          done
+      - name: Run Psalm
+        id: run-psalm
+        # note that we're running the composer-installed psalm in vendor so that it picks up our custom fork
+        run: vendor/bin/psalm --ignore-baseline --output-format=checkstyle ${{ steps.files.outputs.added_modified }} | cs2pr
