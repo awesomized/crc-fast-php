@@ -1,8 +1,8 @@
-# crc-fast-php
+# crc-fast
 [![Code Standards](https://github.com/awesomized/crc-fast-php/actions/workflows/code-standards.yml/badge.svg?branch=main)](https://github.com/awesomized/crc-fast-php/actions/workflows/code-standards.yml)
 [![Static Analysis](https://github.com/awesomized/crc-fast-php/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/awesomized/crc-fast-php/actions/workflows/static-analysis.yml)
 [![Unit Tests](https://github.com/awesomized/crc-fast-php/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/awesomized/crc-fast-php/actions/workflows/unit-tests.yml)
-[![Latest Stable Version](http://poser.pugx.org/awesomized/crc-fast/v)](https://packagist.org/packages/awesomized/crc-fast)
+[![Latest Stable Version](https://img.shields.io/packagist/v/awesomized/crc-fast)](https://packagist.org/packages/awesomized/crc-fast)
 
 Fast, SIMD-accelerated CRC computation in PHP via FFI using Rust. Currently supports [CRC-64/NVME](https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-64-nvme) and [CRC-32/ISO-HDLC aka "crc32"](https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-32-iso-hdlc). Other implementations welcome via PR.
 
