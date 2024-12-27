@@ -51,7 +51,7 @@ final class FfiTest extends TestCase
 
         $ffi = Crc64\Ffi::fromCode(
             code: $code,
-            library: '',
+            library: 'bogus',
         );
 
         /**
