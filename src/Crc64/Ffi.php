@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\Crc64;
+namespace Awesomized\Checksums;
 
 use FFI\Exception;
 use FFI\ParserException;
@@ -16,7 +16,10 @@ final class Ffi
 {
     private const string SCOPE_DEFAULT = 'CRC64NVME';
 
-    private static ?\FFI $ffi = null;
+    /**
+     * @var array<string, \FFI>
+     */
+    private static array $ffis = [];
 
     /**
      * Creates a new FFI instance from the given C declarations and library name.
@@ -31,8 +34,10 @@ final class Ffi
         string $code,
         ?string $library = null,
     ): \FFI {
-        if (null !== self::$ffi) {
-            return self::$ffi;
+        $id = $code . $library;
+
+        if (isset(self::$ffis[$id])) {
+            return self::$ffis[$id];
         }
 
         $ffi = \FFI::cdef(
@@ -40,11 +45,15 @@ final class Ffi
             lib: $library,
         );
 
-        /** @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not */
+        /**
+         * Verify that the FFI instance is valid by calling digest_new() method before caching.
+         *
+         * @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not
+         */
         // @phpstan-ignore-next-line
         $ffi->digest_new();
 
-        return self::$ffi = $ffi;
+        return self::$ffis[$id] = $ffi;
     }
 
     /**
@@ -58,19 +67,25 @@ final class Ffi
     public static function fromPreloadScope(
         string $ffiScopeName = self::SCOPE_DEFAULT,
     ): \FFI {
-        if (null !== self::$ffi) {
-            return self::$ffi;
+        $id = $ffiScopeName;
+
+        if (isset(self::$ffis[$id])) {
+            return self::$ffis[$id];
         }
 
         $ffi = \FFI::scope(
             name: $ffiScopeName,
         );
 
-        /** @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not */
+        /**
+         * Verify that the FFI instance is valid by calling digest_new() method before caching.
+         *
+         * @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not
+         */
         // @phpstan-ignore-next-line
         $ffi->digest_new();
 
-        return self::$ffi = $ffi;
+        return self::$ffis[$id] = $ffi;
     }
 
     /**
@@ -83,12 +98,14 @@ final class Ffi
     public static function fromHeaderFile(
         string $headerFile = '',
     ): \FFI {
-        if (null !== self::$ffi) {
-            return self::$ffi;
-        }
-
         if ('' === $headerFile) {
             $headerFile = self::whichHeaderFile();
+        }
+
+        $id = $headerFile;
+
+        if (isset(self::$ffis[$id])) {
+            return self::$ffis[$id];
         }
 
         $ffi = \FFI::load(
@@ -101,11 +118,15 @@ final class Ffi
             );
         }
 
-        /** @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not */
+        /**
+         * Verify that the FFI instance is valid by calling digest_new() method before caching.
+         *
+         * @psalm-suppress UndefinedMethod - FFI method, can't tell if it's defined or not
+         */
         // @phpstan-ignore-next-line
         $ffi->digest_new();
 
-        return self::$ffi = $ffi;
+        return self::$ffis[$id] = $ffi;
     }
 
     /**

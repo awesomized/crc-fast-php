@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\Crc64\tests\unit;
+namespace Awesomized\Checksums\tests\unit;
 
 use Awesomized\Checksums\Crc64;
+use Awesomized\Checksums\tests\unit\Crc64\NvmeTest;
 use FFI\Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -20,7 +21,7 @@ final class FfiTest extends TestCase
     {
         $this->expectException(Exception::class);
 
-        $ffi = Crc64\Ffi::fromCode(
+        $ffi = Ffi::fromCode(
             code: '',
             library: __DIR__ . '/../../build/target/release/' . Crc64\Ffi::whichLibrary(),
         );
@@ -95,6 +96,8 @@ final class FfiTest extends TestCase
     }
 
     /**
+     * @depends testFfiFromCodeValidInputShouldSucceed
+     *
      * @throws Exception
      * @throws \InvalidArgumentException
      */
@@ -106,6 +109,8 @@ final class FfiTest extends TestCase
     }
 
     /**
+     * @depends testFfiFromHeaderValidHeaderShouldSucceed
+     *
      * @throws Exception
      */
     public function testFfiFromPreloadScopeValidScopeShouldSucceed(): void
@@ -119,6 +124,9 @@ final class FfiTest extends TestCase
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);
     }
 
+    /**
+     * @depends testFfiFromCodeValidInputShouldSucceed
+     */
     private function testFfiCalculateCrc64ShouldSucceed(
         \FFI $ffi,
     ): void {
