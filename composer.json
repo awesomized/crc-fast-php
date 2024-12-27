@@ -1,6 +1,6 @@
 {
     "name": "awesomized/crc-fast",
-    "description": "Library for calculating CRC-64/NVME checksums very fast using SIMD instructions via FFI using Rust",
+    "description": "Fast, SIMD-accelerated CRC computation in PHP via FFI using Rust",
     "type": "library",
     "license": "MIT",
     "prefer-stable": true,
