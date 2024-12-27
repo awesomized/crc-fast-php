@@ -9,7 +9,6 @@ use FFI;
 /**
  * A wrapper around the CRC-64 NVMe FFI library.
  *
- *
  * @see  \Awesomized\Checksums\Crc64\Ffi
  * @link https://github.com/awesomized/crc64fast-nvme
  */
@@ -57,7 +56,7 @@ final class Nvme
      * @param FFI    $crc64Nvme The FFI instance for the CRC-64 NVMe library.
      * @param string $string    The string to calculate the CRC-64 checksum for.
      *
-     * @return string The calculated CRC-64 checksum as a hexadecimal string.
+     * @return string The calculated CRC-64 checksum as a hexadecimal string (due to signed large int issues in PHP).
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -83,7 +82,7 @@ final class Nvme
      * @param int<1, max> $readChunkSize The size of the chunks to read from the file. Adjust as necessary for your
      *                                   environment.
      *
-     * @return string The calculated CRC-64 checksum as a hexadecimal string.
+     * @return string The calculated CRC-64 checksum as a hexadecimal string (due to signed large int issues in PHP).
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
@@ -159,7 +158,7 @@ final class Nvme
     }
 
     /**
-     * Returns the calculated CRC-64 checksum as a hexadecimal string.
+     * Returns the calculated CRC-64 checksum as a hexadecimal string (due to signed large int issues in PHP).
      *
      * @throws \RuntimeException
      */

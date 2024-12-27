@@ -2,9 +2,9 @@
 [![Code Standards](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml)
 [![Static Analysis](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml)
 
-This is a PHP library for calculating `CRC-64/NVME` checksums very fast using SIMD instructions, via FFI using the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) Rust package and its C-compatible shared library.
+Fast, SIMD-accelerated `CRC-64/NVME` computation in PHP via FFI using the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) Rust package and its C-compatible shared library.
 
-It's capable of generating checksums at >20-50 GiB/s, depending on the CPU.
+It's capable of generating checksums at >20-50 GiB/s, depending on the CPU. It is much, much faster (>100X) than the native [crc32](https://www.php.net/manual/en/function.crc32.php), crc32b, and crc32c [implementations](https://www.php.net/manual/en/function.hash-algos.php) in PHP.
 
 `CRC-64/NVME` is in use in a variety of large-scale and mission-critical systems, software, and hardware, such as:
 - AWS S3's [recommended checksum](https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html)
@@ -118,7 +118,7 @@ There's a sample [CLI script](cli/calculate.php) that demonstrates how to use th
 
 ## Development
 
-This project uses [SemVer](https://semver.org), and has extensive code quality, static analysis, and test coverage tooling. See the [Makefile](Makefile) for details.
+This project uses [SemVer](https://semver.org), and has extensive coding standards, static analysis, and test coverage tooling. See the [Makefile](Makefile) for details.
 
 Examples:
 
