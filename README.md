@@ -1,8 +1,11 @@
-# crc64nvme
+# crc-fast-php
 [![Code Standards](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml)
 [![Static Analysis](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml)
 
-Fast, SIMD-accelerated `CRC-64/NVME` computation in PHP via FFI using the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) Rust package and its C-compatible shared library.
+Fast, SIMD-accelerated CRC computation in PHP via FFI using Rust. Currently supports `CRC-64/NVME`, but will likely support other popular checksums over time, especially `CRC32`.
+
+## CRC-64/NVME 
+Uses the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) Rust package and its C-compatible shared library.
 
 It's capable of generating checksums at >20-50 GiB/s, depending on the CPU. It is much, much faster (>100X) than the native [crc32](https://www.php.net/manual/en/function.crc32.php), crc32b, and crc32c [implementations](https://www.php.net/manual/en/function.hash-algos.php) in PHP.
 
@@ -24,7 +27,7 @@ You'll need to have built and installed the [crc64fast-nvme](https://github.com/
 Use [Composer](https://getcomposer.org) to install this library (note the [Requirements](#Requirements) above):
 
 ```bash
-composer require awesomized/crc64nvme
+composer require awesomized/crc-fast
 ```
 
 
@@ -39,7 +42,7 @@ A [helper FFI Class](src/Ffi.php) is provided, which supplies many ways to easil
 use Awesomized\Checksums\Crc64;
 
 // uses the opcache preloaded shared library and PHP Class(es)
-$crc64Nvme = Crc64\Ffi::fromPreloadedScope(
+$crc64Fast = Crc64\Ffi::fromPreloadedScope(
     scope: 'CRC64NVME', // optional, this is the default
 );
 ```
@@ -51,7 +54,7 @@ Uses a C header file to define the functions and point to the shared library (`.
 use Awesomized\Checksums\Crc64;
 
 // uses the FFI_LIB and FFI_SCOPE definitions in the header file
-$crc64Nvme = Crc64\Ffi::fromHeaderFile(
+$crc64Fast = Crc64\Ffi::fromHeaderFile(
     headerFile: 'path/to/crc64fast_nvme.h', // optional, can likely be inferred from the OS
 );
 ```
@@ -61,7 +64,7 @@ $crc64Nvme = Crc64\Ffi::fromHeaderFile(
 use Awesomized\Checksums\Crc64;
 
 // uses the supplied C definitions and name/location of the shared library
-$crc64Nvme = Crc64\Ffi::fromCode(
+$crc64Fast = Crc64\Ffi::fromCode(
     code: 'typedef struct DigestHandle DigestHandle;
             DigestHandle* digest_new(void);
             void digest_write(DigestHandle* handle, const char* data, size_t len);
@@ -123,7 +126,7 @@ This project uses [SemVer](https://semver.org), and has extensive coding standar
 
 Examples:
 
-#### Building the shared `crc64fast-nvme` Rust library
+#### Building the shared `crc64fast-nvme` Rust library for local development and testing
 ```bash
 make build
 ``` 
