@@ -64,7 +64,7 @@ build-crc64nvme: build-directory
 	@cd build/crc64fast-nvme && cargo build --release
 
 .PHONY: build-crc32isohdlc
-build-crc32ieee: build-directory
+build-crc32isohdlc: build-directory
 	@cd build && (if [ ! -d "./crc32fast-lib-rust" ]; then git clone https://github.com/awesomized/crc32fast-lib-rust.git; fi || true)
 	@cd build/crc32fast-lib-rust && git fetch && git checkout 1.0.0
 	@cd build/crc32fast-lib-rust && cargo build --release
