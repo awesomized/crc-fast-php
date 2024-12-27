@@ -1,0 +1,105 @@
+# Only runs on changed PHP files
+name: Code Standards (PR)
+
+on:
+  pull_request:
+    types: [ opened ]
+  workflow_dispatch:
+    # used when called manually. 'secrets' are passed in automagically
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+    inputs:
+      COMPOSER_ROOT_VERSION:
+        description: 'branch alias to use instead of dev-SHA, must have branch-alias in composer.json for root project'
+        default: 'dev-main'
+        required: false
+        type: string
+  workflow_call:
+    # used when called by _another_ workflow (not when called on this repo!)
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_call
+    inputs:
+      COMPOSER_ROOT_VERSION:
+        description: 'branch alias to use instead of dev-SHA, must have branch-alias in composer.json for root project'
+        default: 'dev-main'
+        required: false
+        type: string
+    secrets:
+      # TODO: consider using 'secrets: inherit' ?
+      WORKFLOW_REPO_ACCESS:
+        description: 'GH Token for accessing repos'
+        required: true
+      PACKAGIST_READ_ONLY:
+        description: 'Packagist Token for accessing repos'
+        required: true
+
+env:
+  ENV: dev
+  AVAILABILITY_ZONE: 'none'
+  TIER: github-actions
+  PRODUCT: awesome-star
+  TMP_ROOT: /tmp
+
+jobs:
+  code-standards:
+    runs-on: ubuntu-latest
+
+    steps:
+      # get the source code
+      - uses: actions/checkout@v3
+
+      - name: Print directory info after checkout
+        run: ls -lah
+
+      - name: Get changed files
+        id: files
+        uses: Ana06/get-changed-files@v2.2.0
+        with:
+          filter: '*.php'
+
+      - name: Setup PHP
+        if: steps.files.outputs.added_modified
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3.12'
+          tools: cs2pr:1.8.5, composer:2.8.4, php-cs-fixer:3.65.0, phpcs:3.11.2
+          extensions: mailparse
+
+      - name: Setup problem matchers for PHP
+        if: steps.files.outputs.added_modified
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+      - name: Cache Composer packages
+        if: steps.files.outputs.added_modified
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install Composer dependencies
+        if: ${{ steps.files.outputs.added_modified && steps.composer-cache.outputs.cache-hit != 'true' }}
+        env:
+          # use the special WORKFLOW_REPO_ACCESS (GitHub) and PACKAGIST_READ_ONLY (Packagist) tokens to retrieve private repos
+          # WORKFLOW_REPO_ACCESS (GitHub) is included as a fallback in case Packagist has an issue so the repo can be cloned
+          # from GitHub instead if the ZIP isn't available.
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.WORKFLOW_REPO_ACCESS }}"}, "http-basic": {"repo.packagist.com": {"username": "token", "password": "${{ secrets.PACKAGIST_READ_ONLY }}"}}}'
+          # use the inputs if supplied (from being called via another workflow), supplied vars, or env as a final fallback
+          COMPOSER_ROOT_VERSION: ${{ inputs.COMPOSER_ROOT_VERSION || vars.COMPOSER_ROOT_VERSION || env.COMPOSER_ROOT_VERSION }}
+        run: composer install --no-interaction --no-scripts --ignore-platform-req=php+
+
+      - name: Run PHPCS
+        id: run-phpcs
+        if: steps.files.outputs.added_modified
+        run: phpcs --standard=phpcs.xml --report=checkstyle ${{ steps.files.outputs.added_modified }} | cs2pr
+
+      - name: Run PHP-CS-Fixer
+        id: run-php-cs-fixer
+        if: steps.files.outputs.added_modified
+        # note that we can't just operate on a list of files, due to a limitation in php-cs-fixer, so this will only
+        # report the first error found.
+        # see: https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues/4279
+        run: |
+          for changed_file in ${{ steps.files.outputs.all }}; do
+            php-cs-fixer fix -n --dry-run --format=checkstyle --config=.php-cs-fixer.php ${changed_file} | cs2pr
+          done
