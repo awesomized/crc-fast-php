@@ -76,4 +76,22 @@ trait FfiTrait
 
         return self::$ffis[$id] = $ffi;
     }
+
+    public static function whichHeaderFile(): string
+    {
+        return match (PHP_OS_FAMILY) {
+            self::OS_DARWIN => self::PREFIX_HEADER . '-darwin.h',
+            self::OS_WINDOWS => self::PREFIX_HEADER . '-windows.h',
+            default => self::PREFIX_HEADER . '-linux.h',
+        };
+    }
+
+    public static function whichLibrary(): string
+    {
+        return match (PHP_OS_FAMILY) {
+            self::OS_DARWIN => self::PREFIX_LIB . '.dylib',
+            self::OS_WINDOWS => self::PREFIX_LIB . '.dll',
+            default => self::PREFIX_LIB . '.so',
+        };
+    }
 }

@@ -2,19 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\Crc64;
+namespace Awesomized\Checksums\Crc64\Nvme;
 
 use Awesomized\Checksums;
 use FFI;
 
 /**
- * A wrapper around the CRC-64 NVMe FFI library.
+ * A wrapper around the CRC-64/NVME FFI library.
  *
- * @see  \Awesomized\Checksums\Crc64\Ffi
+ * @see  \Awesomized\Checksums\Crc64\Nvme\Ffi
  * @link https://github.com/awesomized/crc64fast-nvme
+ * @link https://reveng.sourceforge.io/crc-catalogue/all.htm#crc.cat.crc-64-nvme
  */
-final class Nvme implements Checksums\CrcInterface
+final class Computer implements Checksums\CrcInterface
 {
+    use Checksums\ChecksumTrait;
+
     private FFI\CData $digestHandle;
 
     /**
@@ -42,62 +45,6 @@ final class Nvme implements Checksums\CrcInterface
         }
 
         $this->digestHandle = $digestHandle;
-    }
-
-    public static function calculate(
-        FFI $ffi,
-        string $string,
-    ): string {
-        return (new self(
-            crc64Nvme: $ffi,
-        ))
-            ->write(
-                string: $string,
-            )
-            ->sum();
-    }
-
-    public static function calculateFile(
-        FFI $ffi,
-        string $filename,
-        int $readChunkSize = self::READ_CHUNK_SIZE_DEFAULT,
-    ): string {
-        $handle = fopen(
-            filename: $filename,
-            mode: 'rb',
-        );
-
-        if (false === $handle) {
-            throw new \InvalidArgumentException(
-                message: "Could not open file: {$filename}",
-            );
-        }
-
-        $nvme = new self(
-            crc64Nvme: $ffi,
-        );
-
-        while (
-            !feof(
-                stream: $handle,
-            )
-        ) {
-            $chunk = fread(
-                stream: $handle,
-                length: $readChunkSize,
-            );
-            if (false !== $chunk) {
-                $nvme->write(
-                    string: $chunk,
-                );
-            }
-        }
-
-        fclose(
-            stream: $handle,
-        );
-
-        return $nvme->sum();
     }
 
     public function write(

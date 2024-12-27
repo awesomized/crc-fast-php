@@ -11,12 +11,17 @@
 
 declare(strict_types=1);
 
-use Awesomized\Checksums\Crc64;
+use Awesomized\Checksums;
 
 require 'src/FfiInterface.php';
 require 'src/FfiTrait.php';
-require 'src/Crc64/Ffi.php';
+require 'src/Crc64/Nvme/Ffi.php';
+require 'src/Crc32/IsoHdlc/Ffi.php';
 
 \FFI::load(
-    Crc64\Ffi::whichHeaderFile(),
+    Checksums\Crc64\Nvme\Ffi::whichHeaderFile(),
+);
+
+\FFI::load(
+    Checksums\Crc32\IsoHdlc\Ffi::whichHeaderFile(),
 );

@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Awesomized\Checksums;
 
+use Awesomized\Checksums;
 use FFI;
 
 /**
  * A common Interface for CRC checksum calculations via FFI (Foreign Function Interface) libraries.
  *
- * @see Crc64\Nvme
+ * @see Checksums\Crc64\Nvme\Computer
+ * @see Checksums\Crc32\IsoHdlc\Computer
  * @link https://www.php.net/manual/en/book.ffi.php
  */
 interface CrcInterface

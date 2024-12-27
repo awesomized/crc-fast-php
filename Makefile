@@ -1,8 +1,5 @@
 .PHONY: build
-build:
-	@if [ ! -d "./build" ]; then git clone https://github.com/awesomized/crc64fast-nvme.git build; fi
-	@cd build && git fetch && git checkout 1.1.0
-	@cd build && cargo build --release
+build: build-crc64nvme build-crc32isohdlc
 
 .PHONY: validate
 validate: phpcs php-cs-fixer-check static-analysis test cli
@@ -46,13 +43,31 @@ phpunit: build
 
 .PHONY: cli
 cli: build
-	@echo "Should result in f8046e40c403f1d0:"
-	@php cli/calculate.php 'hello, world!'
+	@echo "CRC-64/NVME should result in f8046e40c403f1d0:"
+	@php cli/calculateCrc64Nvme.php 'hello, world!'
+	@echo "CRC-32/ISO-HDLC should result in 58988d13:"
+	@php cli/calculateCrc32IsoHdlc.php 'hello, world!'
 
 .PHONY: composer
 composer:
 	# Psalm v5.26.1 doesn't like PHP-8.4
 	composer install --ignore-platform-req=php+
+
+.PHONY: build-directory
+build-directory:
+	@if [ ! -d "./build" ]; then mkdir build; fi
+
+.PHONY: build-crc64nvme
+build-crc64nvme: build-directory
+	@cd build && (if [ ! -d "./crc64fast-nvme" ]; then git clone https://github.com/awesomized/crc64fast-nvme.git; fi || true)
+	@cd build/crc64fast-nvme && git fetch && git checkout 1.1.0
+	@cd build/crc64fast-nvme && cargo build --release
+
+.PHONY: build-crc32isohdlc
+build-crc32ieee: build-directory
+	@cd build && (if [ ! -d "./crc32fast-lib-rust" ]; then git clone https://github.com/awesomized/crc32fast-lib-rust.git; fi || true)
+	@cd build/crc32fast-lib-rust && git fetch && git checkout 1.0.0
+	@cd build/crc32fast-lib-rust && cargo build --release
 
 .PHONY: clean
 clean:

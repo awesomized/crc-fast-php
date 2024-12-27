@@ -19,6 +19,9 @@ interface FfiInterface
     // override in children
     public const string SCOPE_DEFAULT = 'SCOPE_DEFAULT';
 
+    public const string OS_DARWIN = 'Darwin';
+    public const string OS_WINDOWS = 'Windows';
+
     /**
      * Creates a new FFI instance from the given C declarations and library name.
      *

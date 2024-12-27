@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\tests\unit\Crc64;
+namespace Awesomized\Checksums\tests\unit\Crc64\Nvme;
 
 use Awesomized\Checksums\Crc64;
+use Awesomized\Checksums\tests\unit\Definitions;
+use FFI\CData;
 use FFI\Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -20,9 +22,9 @@ final class FfiTest extends TestCase
     {
         $this->expectException(Exception::class);
 
-        $ffi = Crc64\Ffi::fromCode(
+        $ffi = Crc64\Nvme\Ffi::fromCode(
             code: '',
-            library: __DIR__ . '/../../../build/target/release/' . Crc64\Ffi::whichLibrary(),
+            library: __DIR__ . '/../../../../build/crc64fast-nvme/target/release/' . Crc64\Nvme\Ffi::whichLibrary(),
         );
 
         /**
@@ -42,14 +44,14 @@ final class FfiTest extends TestCase
         $this->expectException(Exception::class);
 
         $code = file_get_contents(
-            __DIR__ . '/../../../' . Crc64\Ffi::whichHeaderFile(),
+            __DIR__ . '/../../../../' . Crc64\Nvme\Ffi::whichHeaderFile(),
         );
 
         if (false === $code) {
-            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
+            self::markTestSkipped('Could not read the header file ' . Crc64\Nvme\Ffi::whichHeaderFile());
         }
 
-        $ffi = Crc64\Ffi::fromCode(
+        $ffi = Crc64\Nvme\Ffi::fromCode(
             code: $code,
             library: 'bogus',
         );
@@ -70,7 +72,7 @@ final class FfiTest extends TestCase
     {
         $this->expectException(Exception::class);
 
-        $ffi = Crc64\Ffi::fromHeaderFile(
+        $ffi = Crc64\Nvme\Ffi::fromHeaderFile(
             headerFile: __DIR__ . '/FfiTest.php',
         );
 
@@ -84,14 +86,14 @@ final class FfiTest extends TestCase
      */
     public function testFfiFromCodeValidInputShouldSucceed(): void
     {
-        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
+        $code = file_get_contents(Crc64\Nvme\Ffi::whichHeaderFile());
         if (false === $code) {
-            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
+            self::markTestSkipped('Could not read the header file ' . Crc64\Nvme\Ffi::whichHeaderFile());
         }
 
-        $ffi = Crc64\Ffi::fromCode(
+        $ffi = Crc64\Nvme\Ffi::fromCode(
             code: $code,
-            library: __DIR__ . '/../../../build/target/release/' . Crc64\Ffi::whichLibrary(),
+            library: __DIR__ . '/../../../../build/crc64fast-nvme/target/release/' . Crc64\Nvme\Ffi::whichLibrary(),
         );
 
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);
@@ -105,7 +107,7 @@ final class FfiTest extends TestCase
      */
     public function testFfiFromHeaderValidHeaderShouldSucceed(): void
     {
-        $ffi = Crc64\Ffi::fromHeaderFile();
+        $ffi = Crc64\Nvme\Ffi::fromHeaderFile();
 
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);
     }
@@ -123,7 +125,7 @@ final class FfiTest extends TestCase
         }
 
         try {
-            $ffi = Crc64\Ffi::fromPreloadScope();
+            $ffi = Crc64\Nvme\Ffi::fromPreloadScope();
         } catch (\FFI\Exception $e) {
             self::markTestSkipped("FFI instance doesn't appear to be preloaded.");
         }
@@ -143,20 +145,24 @@ final class FfiTest extends TestCase
         // @phpstan-ignore-next-line
         $digest = $ffi->digest_new();
 
-        self::assertInstanceOf(\FFI\CData::class, $digest);
+        self::assertInstanceOf(CData::class, $digest);
 
         /**
          * @psalm-suppress UndefinedMethod - from FFI, so Psalm and PHPStan can't know if the method exists
          */
         // @phpstan-ignore-next-line
-        $ffi->digest_write($digest, NvmeTest::HELLO_WORLD, NvmeTest::HELLO_WORLD_LENGTH);
+        $ffi->digest_write(
+            $digest,
+            Definitions::HELLO_WORLD,
+            Definitions::HELLO_WORLD_LENGTH,
+        );
 
         /**
          * @psalm-suppress UndefinedMethod - from FFI, so Psalm and PHPStan can't know if the method exists
          */
         // @phpstan-ignore-next-line
         self::assertSame(
-            NvmeTest::HELLO_WORLD_CRC64,
+            Definitions::HELLO_WORLD_CRC64_NVME,
             \sprintf(
                 '%016x',
                 // @phpstan-ignore-next-line

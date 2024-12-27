@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\tests\unit\Crc64;
+namespace Awesomized\Checksums\tests\unit\Crc32\IsoHdlc;
 
-use Awesomized\Checksums\Crc64;
+use Awesomized\Checksums\Crc32;
+use Awesomized\Checksums\tests\unit\Definitions;
 use FFI;
 use PHPUnit\Framework\TestCase;
 use Random\RandomException;
@@ -12,13 +13,8 @@ use Random\RandomException;
 /**
  * @internal
  */
-final class NvmeTest extends TestCase
+final class ComputerTest extends TestCase
 {
-    public const string HELLO_WORLD = 'hello, world!';
-    public const int HELLO_WORLD_LENGTH = 13;
-    public const string HELLO_WORLD_CRC64 = 'f8046e40c403f1d0';
-    public const string HELLO_WORLD_FILE = __DIR__ . '/../../fixtures/hello-world.txt';
-
     private FFI $ffi;
 
     /**
@@ -26,7 +22,7 @@ final class NvmeTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->ffi = Crc64\Ffi::fromHeaderFile();
+        $this->ffi = Crc32\IsoHdlc\Ffi::fromHeaderFile();
     }
 
     /**
@@ -39,8 +35,8 @@ final class NvmeTest extends TestCase
 
         $ffi = \FFI::cdef();
 
-        new Crc64\Nvme(
-            crc64Nvme: $ffi,
+        new Crc32\IsoHdlc\Computer(
+            crc32IsoHdlc: $ffi,
         );
     }
 
@@ -53,8 +49,8 @@ final class NvmeTest extends TestCase
     {
         $this->expectNotToPerformAssertions();
 
-        $crc64Nvme = new Crc64\Nvme(
-            crc64Nvme: $this->ffi,
+        $ffi = new Crc32\IsoHdlc\Computer(
+            crc32IsoHdlc: $this->ffi,
         );
     }
 
@@ -66,13 +62,13 @@ final class NvmeTest extends TestCase
      */
     public function testCalculateHelloWorldShouldSucceed(): void
     {
-        $crc64 = Crc64\Nvme::calculate(
+        $crc64 = Crc32\IsoHdlc\Computer::calculate(
             ffi: $this->ffi,
-            string: self::HELLO_WORLD,
+            string: Definitions::HELLO_WORLD,
         );
 
         self::assertSame(
-            self::HELLO_WORLD_CRC64,
+            Definitions::HELLO_WORLD_CRC32_ISO_HDLC,
             $crc64,
         );
     }
@@ -85,13 +81,13 @@ final class NvmeTest extends TestCase
      */
     public function testCalculateFileHelloWorldShouldSucceed(): void
     {
-        $crc64 = Crc64\Nvme::calculateFile(
+        $crc64 = Crc32\IsoHdlc\Computer::calculateFile(
             ffi: $this->ffi,
-            filename: self::HELLO_WORLD_FILE,
+            filename: Definitions::HELLO_WORLD_FILE,
         );
 
         self::assertSame(
-            self::HELLO_WORLD_CRC64,
+            Definitions::HELLO_WORLD_CRC32_ISO_HDLC,
             $crc64,
         );
     }
@@ -108,7 +104,7 @@ final class NvmeTest extends TestCase
      */
     public function testCalculateBinaryDataShouldSucceed(): void
     {
-        $crc64 = Crc64\Nvme::calculate(
+        $crc64 = Crc32\IsoHdlc\Computer::calculate(
             ffi: $this->ffi,
             string: 0x00 . random_bytes(1024 * 1024),
         );
@@ -124,16 +120,60 @@ final class NvmeTest extends TestCase
      */
     public function testCalculateChunkedDataShouldSucceed(): void
     {
-        $crc64Nvme = new Crc64\Nvme(
-            crc64Nvme: $this->ffi,
+        $crc64Nvme = new Crc32\IsoHdlc\Computer(
+            crc32IsoHdlc: $this->ffi,
         );
 
         $crc64Nvme->write('hello, ');
         $crc64Nvme->write('world!');
 
         self::assertSame(
-            self::HELLO_WORLD_CRC64,
+            Definitions::HELLO_WORLD_CRC32_ISO_HDLC,
             $crc64Nvme->sum(),
+        );
+    }
+
+    /**
+     * @depends testConstructorValidLibraryShouldSucceed
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public function testCalculateCheckValueShouldMatch(): void
+    {
+        $crc32 = Crc32\IsoHdlc\Computer::calculate(
+            ffi: $this->ffi,
+            string: Definitions::CHECK_INPUT,
+        );
+
+        self::assertSame(
+            Definitions::CHECK_RESULT_CRC32_ISO_HDLC,
+            $crc32,
+        );
+    }
+
+    /**
+     * @depends testConstructorValidLibraryShouldSucceed
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
+     */
+    public function testComparePhpFunctionKnownValuesShouldMatch(): void
+    {
+        self::assertSame(
+            dechex(crc32(Definitions::HELLO_WORLD)),
+            Crc32\IsoHdlc\Computer::calculate(
+                ffi: $this->ffi,
+                string: Definitions::HELLO_WORLD,
+            ),
+        );
+
+        self::assertSame(
+            dechex(crc32(Definitions::CHECK_INPUT)),
+            Crc32\IsoHdlc\Computer::calculate(
+                ffi: $this->ffi,
+                string: Definitions::CHECK_INPUT,
+            ),
         );
     }
 }
