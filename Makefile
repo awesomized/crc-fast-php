@@ -52,7 +52,7 @@ cli: build
 .PHONY: composer
 composer:
 	# Psalm v5.26.1 doesn't like PHP-8.4
-	composer install --ignore-platform-req=php
+	composer install --ignore-platform-req=php+
 
 .PHONY: clean
 clean:
