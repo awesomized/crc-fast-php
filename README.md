@@ -1,4 +1,6 @@
 # crc64nvme
+[![Code Standards](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml)
+[![Static Analysis](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml)
 
 This is a PHP library for calculating `CRC-64/NVME` checksums very fast using SIMD instructions, via FFI using the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) Rust package and its C-compatible shared library.
 
@@ -8,10 +10,6 @@ It's capable of generating checksums at >20-50 GiB/s, depending on the CPU.
 - AWS S3's [recommended checksum](https://docs.aws.amazon.com/AmazonS3/latest/userguide/checking-object-integrity.html)
 - The [Linux kernel](https://github.com/torvalds/linux/blob/786c8248dbd33a5a7a07f7c6e55a7bfc68d2ca48/lib/crc64.c#L66-L73)
 - The [NVMe specification](https://nvmexpress.org/wp-content/uploads/NVM-Express-NVM-Command-Set-Specification-1.0d-2023.12.28-Ratified.pdf)
-
-## Status
-
-TBD.
 
 ## Changes
 
