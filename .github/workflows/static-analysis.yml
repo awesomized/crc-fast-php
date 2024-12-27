@@ -41,8 +41,6 @@ jobs:
 
       - name: Setup PHP
         uses: shivammathur/setup-php@verbose
-        env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.WORKFLOW_REPO_ACCESS }}"}, "http-basic": {"repo.packagist.com": {"username": "token", "password": "${{ secrets.PACKAGIST_READ_ONLY }}"}}}'
         with:
           php-version: '8.3.12'
           # note that psalm isn't installed here, since we use a custom fork of psalm, and is instead installed via
