@@ -23,43 +23,26 @@ final class NvmeTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \FFI\Exception
      */
-    public function testConstructorShouldFailWithInvalidLibrary(): void
+    protected function setUp(): void
     {
-        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
-        if (false === $code) {
-            self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
-        }
-
-        $this->expectException(\FFI\Exception::class);
-
-        $ffi = \FFI::cdef(
-            code: $code,
-            lib: '',
-        );
-
-        new Crc64\Nvme(
-            crc64Nvme: $ffi,
-        );
+        $this->ffi = Crc64\Ffi::fromHeaderFile();
     }
 
     /**
      * @throws \InvalidArgumentException
+     * @throws \FFI\Exception
      */
-    protected function setUp(): void
+    public function testConstructorInvalidLibraryShouldFail(): void
     {
-        try {
-            if (false !== \ini_get('opcache.preload')) {
-                $this->ffi = Crc64\Ffi::fromPreloadScope();
+        $this->expectException(\InvalidArgumentException::class);
 
-                return;
-            }
-        } catch (\Throwable $e) {
-            // ignore
-        }
+        $ffi = \FFI::cdef();
 
-        $this->ffi = Crc64\Ffi::fromHeaderFile();
+        new Crc64\Nvme(
+            crc64Nvme: $ffi,
+        );
+
     }
 
     /**
