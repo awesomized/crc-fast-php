@@ -1,6 +1,7 @@
 # crc-fast-php
-[![Code Standards](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/code-standards.yml)
-[![Static Analysis](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/awesomized/crc64nvme/actions/workflows/static-analysis.yml)
+[![Code Standards](https://github.com/awesomized/crc-fast-php/actions/workflows/code-standards.yml/badge.svg?branch=main)](https://github.com/awesomized/crc-fast-php/actions/workflows/code-standards.yml)
+[![Static Analysis](https://github.com/awesomized/crc-fast-php/actions/workflows/static-analysis.yml/badge.svg?branch=main)](https://github.com/awesomized/crc-fast-php/actions/workflows/static-analysis.yml)
+[![Unit Tests](https://github.com/awesomized/crc-fast-php/actions/workflows/unit-tests.yml/badge.svg?branch=main)](https://github.com/awesomized/crc-fast-php/actions/workflows/unit-tests.yml)
 
 Fast, SIMD-accelerated CRC computation in PHP via FFI using Rust. Currently supports `CRC-64/NVME`, but will likely support other popular checksums over time, especially `CRC32`.
 
