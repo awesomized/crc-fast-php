@@ -21,25 +21,6 @@ on:
         default: 'dev-main'
         required: false
         type: string
-    secrets:
-      # TODO: consider using 'secrets: inherit' ?
-      WORKFLOW_REPO_ACCESS:
-        description: 'GH Token for accessing repos'
-        required: true
-      PACKAGIST_READ_ONLY:
-        description: 'Packagist Token for accessing repos'
-        required: true
-
-env:
-  # use the special WORKFLOW_REPO_ACCESS (GitHub) and PACKAGIST_READ_ONLY (Packagist) tokens to retrieve private repos
-  # WORKFLOW_REPO_ACCESS (GitHub) is included as a fallback in case Packagist has an issue so the repo can be cloned
-  # from GitHub instead if the ZIP isn't available.
-  COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.WORKFLOW_REPO_ACCESS }}"}, "http-basic": {"repo.packagist.com": {"username": "token", "password": "${{ secrets.PACKAGIST_READ_ONLY }}"}}}'
-  ENV: dev
-  AVAILABILITY_ZONE: 'none'
-  TIER: github-actions
-  PRODUCT: awesome-star
-  TMP_ROOT: /tmp
 
 jobs:
   code-standards:
@@ -74,10 +55,6 @@ jobs:
       - name: Install Composer dependencies
         if: ${{ steps.composer-cache.outputs.cache-hit != 'true' }}
         env:
-          # use the special WORKFLOW_REPO_ACCESS (GitHub) and PACKAGIST_READ_ONLY (Packagist) tokens to retrieve private repos
-          # WORKFLOW_REPO_ACCESS (GitHub) is included as a fallback in case Packagist has an issue so the repo can be cloned
-          # from GitHub instead if the ZIP isn't available.
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.WORKFLOW_REPO_ACCESS }}"}, "http-basic": {"repo.packagist.com": {"username": "token", "password": "${{ secrets.PACKAGIST_READ_ONLY }}"}}}'
           # use the inputs if supplied (from being called via another workflow), supplied vars, or env as a final fallback
           COMPOSER_ROOT_VERSION: ${{ inputs.COMPOSER_ROOT_VERSION || vars.COMPOSER_ROOT_VERSION || env.COMPOSER_ROOT_VERSION }}
         run: composer install --no-interaction --no-scripts --ignore-platform-req=php+
