@@ -1,0 +1,10 @@
+.git
+.DS_Store
+*.swp
+.idea/
+.vscode/
+.phpunit.result.cache
+.phpunit.cache
+.php-cs-fixer.cache
+vendor
+build

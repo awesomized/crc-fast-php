@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<ruleset name="Awesome">
+    <description><![CDATA[
+
+        A custom coding standard for Awesome* projects in case we ever want to go beyond PER-CS-2.0.
+
+        PER-CS-2.0 is the baseline: https://www.php-fig.org/per/coding-style/
+
+        A basic CLI invocation looks like this:
+
+        phpcs -s --standard=phpcs.xml src/
+    ]]></description>
+    <rule ref="PSR12">
+        <!-- PER-CS-2.0 changes braces and newlines behavior over PSR-12 -->
+        <exclude name="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore" />
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine" />
+        <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNewLine" />
+    </rule>
+</ruleset>

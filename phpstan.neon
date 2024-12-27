@@ -1,0 +1,32 @@
+# Use level=10 with the strictest rules we can find
+#
+# primarily used for this (AwesomeProjectConfigs) repository
+#
+parameters:
+    level: 10
+    bootstrapFiles:
+      - vendor/autoload.php
+    paths:
+        - .github
+        - cli
+        - src
+        - tests
+    polluteScopeWithLoopInitialAssignments: false
+    polluteScopeWithAlwaysIterableForeach: false
+    polluteScopeWithBlock: false
+    checkExplicitMixedMissingReturn: true
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    reportMaybesInMethodSignatures: true
+    reportMaybesInPropertyPhpDocTypes: true
+    reportStaticMethodSignatures: true
+    checkDynamicProperties: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    rememberPossiblyImpureFunctionValues: true
+    checkImplicitMixed: true
+    checkBenevolentUnionTypes: true
+    exceptions:
+        check:
+            missingCheckedExceptionInThrows: true
+            tooWideThrowType: true
