@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\tests\unit;
+namespace Awesomized\Checksums\tests\unit\Crc64;
 
 use Awesomized\Checksums\Crc64;
 use FFI;
@@ -17,7 +17,7 @@ final class NvmeTest extends TestCase
     public const string HELLO_WORLD = 'hello, world!';
     public const int HELLO_WORLD_LENGTH = 13;
     public const string HELLO_WORLD_CRC64 = 'f8046e40c403f1d0';
-    public const string HELLO_WORLD_FILE = __DIR__ . '/../fixtures/hello-world.txt';
+    public const string HELLO_WORLD_FILE = __DIR__ . '/../../fixtures/hello-world.txt';
 
     private FFI $ffi;
 
@@ -67,7 +67,7 @@ final class NvmeTest extends TestCase
     public function testCalculateHelloWorldShouldSucceed(): void
     {
         $crc64 = Crc64\Nvme::calculate(
-            crc64Nvme: $this->ffi,
+            ffi: $this->ffi,
             string: self::HELLO_WORLD,
         );
 
@@ -86,7 +86,7 @@ final class NvmeTest extends TestCase
     public function testCalculateFileHelloWorldShouldSucceed(): void
     {
         $crc64 = Crc64\Nvme::calculateFile(
-            crc64Nvme: $this->ffi,
+            ffi: $this->ffi,
             filename: self::HELLO_WORLD_FILE,
         );
 
@@ -109,7 +109,7 @@ final class NvmeTest extends TestCase
     public function testCalculateBinaryDataShouldSucceed(): void
     {
         $crc64 = Crc64\Nvme::calculate(
-            crc64Nvme: $this->ffi,
+            ffi: $this->ffi,
             string: 0x00 . random_bytes(1024 * 1024),
         );
 

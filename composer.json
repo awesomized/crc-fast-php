@@ -22,12 +22,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Awesomized\\Checksums\\Crc64\\": "src/"
+            "Awesomized\\Checksums\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Awesomized\\Checksums\\Crc64\\tests\\": "tests/"
+            "Awesomized\\Checksums\\tests\\": "tests/"
         }
     },
     "require-dev": {

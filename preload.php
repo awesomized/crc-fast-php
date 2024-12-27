@@ -13,7 +13,9 @@ declare(strict_types=1);
 
 use Awesomized\Checksums\Crc64;
 
-require 'src/Ffi.php';
+require 'src/FfiInterface.php';
+require 'src/FfiTrait.php';
+require 'src/Crc64/Ffi.php';
 
 \FFI::load(
     Crc64\Ffi::whichHeaderFile(),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Awesomized\Checksums\Crc64;
 
+use Awesomized\Checksums;
 use FFI;
 
 /**
@@ -12,15 +13,8 @@ use FFI;
  * @see  \Awesomized\Checksums\Crc64\Ffi
  * @link https://github.com/awesomized/crc64fast-nvme
  */
-final class Nvme
+final class Nvme implements Checksums\CrcInterface
 {
-    /**
-     * The default read chunk size for file checksum calculation.
-     *
-     * 512 KiB turned out to be the fastest in my test cases.
-     */
-    private const int READ_CHUNK_SIZE_DEFAULT = 524288;
-
     private FFI\CData $digestHandle;
 
     /**
@@ -50,23 +44,12 @@ final class Nvme
         $this->digestHandle = $digestHandle;
     }
 
-    /**
-     * Calculates the CRC-64 checksum for a string.
-     *
-     * @param FFI    $crc64Nvme The FFI instance for the CRC-64 NVMe library.
-     * @param string $string    The string to calculate the CRC-64 checksum for.
-     *
-     * @return string The calculated CRC-64 checksum as a hexadecimal string (due to signed large int issues in PHP).
-     *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     */
     public static function calculate(
-        FFI $crc64Nvme,
+        FFI $ffi,
         string $string,
     ): string {
         return (new self(
-            crc64Nvme: $crc64Nvme,
+            crc64Nvme: $ffi,
         ))
             ->write(
                 string: $string,
@@ -74,21 +57,8 @@ final class Nvme
             ->sum();
     }
 
-    /**
-     * Calculates the CRC-64 checksum for a file.
-     *
-     * @param FFI         $crc64Nvme     The FFI instance for the CRC-64 NVMe library.
-     * @param string      $filename      The file or URL.
-     * @param int<1, max> $readChunkSize The size of the chunks to read from the file. Adjust as necessary for your
-     *                                   environment.
-     *
-     * @return string The calculated CRC-64 checksum as a hexadecimal string (due to signed large int issues in PHP).
-     *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     */
     public static function calculateFile(
-        FFI $crc64Nvme,
+        FFI $ffi,
         string $filename,
         int $readChunkSize = self::READ_CHUNK_SIZE_DEFAULT,
     ): string {
@@ -104,7 +74,7 @@ final class Nvme
         }
 
         $nvme = new self(
-            crc64Nvme: $crc64Nvme,
+            crc64Nvme: $ffi,
         );
 
         while (
@@ -130,11 +100,6 @@ final class Nvme
         return $nvme->sum();
     }
 
-    /**
-     * Writes a string to the CRC-64 checksum calculation.
-     *
-     * @throws \RuntimeException
-     */
     public function write(
         string $string,
     ): self {
@@ -157,11 +122,6 @@ final class Nvme
         return $this;
     }
 
-    /**
-     * Returns the calculated CRC-64 checksum as a hexadecimal string (due to signed large int issues in PHP).
-     *
-     * @throws \RuntimeException
-     */
     public function sum(): string
     {
         try {

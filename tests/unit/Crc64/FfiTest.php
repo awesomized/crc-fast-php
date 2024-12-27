@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Awesomized\Checksums\tests\unit;
+namespace Awesomized\Checksums\tests\unit\Crc64;
 
 use Awesomized\Checksums\Crc64;
-use Awesomized\Checksums\tests\unit\Crc64\NvmeTest;
 use FFI\Exception;
 use PHPUnit\Framework\TestCase;
 
@@ -21,9 +20,9 @@ final class FfiTest extends TestCase
     {
         $this->expectException(Exception::class);
 
-        $ffi = Ffi::fromCode(
+        $ffi = Crc64\Ffi::fromCode(
             code: '',
-            library: __DIR__ . '/../../build/target/release/' . Crc64\Ffi::whichLibrary(),
+            library: __DIR__ . '/../../../build/target/release/' . Crc64\Ffi::whichLibrary(),
         );
 
         /**
@@ -42,7 +41,10 @@ final class FfiTest extends TestCase
     {
         $this->expectException(Exception::class);
 
-        $code = file_get_contents(Crc64\Ffi::whichHeaderFile());
+        $code = file_get_contents(
+            __DIR__ . '/../../../' . Crc64\Ffi::whichHeaderFile(),
+        );
+
         if (false === $code) {
             self::markTestSkipped('Could not read the header file ' . Crc64\Ffi::whichHeaderFile());
         }
@@ -89,7 +91,7 @@ final class FfiTest extends TestCase
 
         $ffi = Crc64\Ffi::fromCode(
             code: $code,
-            library: __DIR__ . '/../../build/target/release/' . Crc64\Ffi::whichLibrary(),
+            library: __DIR__ . '/../../../build/target/release/' . Crc64\Ffi::whichLibrary(),
         );
 
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);

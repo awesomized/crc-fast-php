@@ -12,13 +12,11 @@ if (!isset($argv[1]) || '' === $argv[1]) {
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$ffi = Crc64\Ffi::fromHeaderFile(
-    headerFile: Crc64\Ffi::whichHeaderFile(),
-);
+$ffi = Crc64\Ffi::fromHeaderFile();
 
 if (is_readable($argv[1])) {
     echo Crc64\Nvme::calculateFile(
-        crc64Nvme: $ffi,
+        ffi: $ffi,
         filename: $argv[1],
     ) . PHP_EOL;
 
@@ -26,6 +24,6 @@ if (is_readable($argv[1])) {
 }
 
 echo Crc64\Nvme::calculate(
-    crc64Nvme: $ffi,
+    ffi: $ffi,
     string: $argv[1],
 ) . PHP_EOL;

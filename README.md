@@ -73,6 +73,7 @@ $crc64Nvme = Crc64\Ffi::fromCode(
 ### Using the CRC-64/NVME FFI object
 
 #### Calculate CRC-64/NVME checksums:
+
 ```php
 use Awesomized\Checksums\Crc64;
 
@@ -80,14 +81,14 @@ use Awesomized\Checksums\Crc64;
 
 // calculate the checksum of a string
 $checksum = Crc64\Nvme::calculate(
-    crc64Nvme: $crc64Fast, 
+    ffi: $crc64Fast, 
     string: 'hello, world!'
 ); // f8046e40c403f1d0
 
 // calculate the checksum of a file, which will chunk through the file optimally,
 // limiting RAM usage and maximizing throughput
 $checksum = Crc64\Nvme::calculateFile(
-    crc64Nvme: $crc64Fast, 
+    ffi: $crc64Fast, 
     filename: 'path/to/hello-world'
 ); // f8046e40c403f1d0
 ```
