@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	@if [ ! -d "./build" ]; then git clone git@github.com:awesomized/crc64fast-nvme.git build; fi
+	@if [ ! -d "./build" ]; then git clone https://github.com/awesomized/crc64fast-nvme.git build; fi
 	@cd build && git checkout add-c-compatible-library
 	@cd build && cargo build --release
 
