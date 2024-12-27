@@ -15,19 +15,24 @@ It's capable of generating checksums at >20-50 GiB/s, depending on the CPU.
 
 See the [change log](CHANGELOG.md).
 
+## Requirements
+
+You'll need to have built and installed the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) shared Rust library, and possibly configured where and how to load it. (See [Usage](#Usage), below).
+
 ## Installation
 
-Use [Composer](https://getcomposer.org) to install this library:
+Use [Composer](https://getcomposer.org) to install this library (note the [Requirements](#Requirements) above):
 
 ```bash
 composer require awesomized/crc64nvme
 ```
 
+
 ## Usage
 
 ### Creating the CRC-64/NVME FFI object 
 
-A [helper FFI Class](src/Ffi.php) is provided, which supplies many ways to easily create an FFI object for the `crc64fast-nvme` shared library:
+A [helper FFI Class](src/Ffi.php) is provided, which supplies many ways to easily create an FFI object for the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) shared library:
 
 #### - Via [preloaded](https://www.php.net/manual/en/ffi.examples-complete.php) shared library (recommended for any long-running workloads, such as web requests):
 ```php
@@ -35,7 +40,7 @@ use Awesomized\Checksums\Crc64;
 
 // uses the opcache preloaded shared library and PHP Class(es)
 $crc64Nvme = Crc64\Ffi::fromPreloadedScope(
-    scope: 'CRC64NVME', // optional
+    scope: 'CRC64NVME', // optional, this is the default
 );
 ```
 
@@ -47,7 +52,7 @@ use Awesomized\Checksums\Crc64;
 
 // uses the FFI_LIB and FFI_SCOPE definitions in the header file
 $crc64Nvme = Crc64\Ffi::fromHeaderFile(
-    headerFile: 'path/to/crc64fast_nvme.h', // optional
+    headerFile: 'path/to/crc64fast_nvme.h', // optional, can likely be inferred from the OS
 );
 ```
 
@@ -79,7 +84,8 @@ $checksum = Crc64\Nvme::calculate(
     string: 'hello, world!'
 ); // f8046e40c403f1d0
 
-// calculate the checksum of a file
+// calculate the checksum of a file, which will chunk through the file optimally,
+// limiting RAM usage and maximizing throughput
 $checksum = Crc64\Nvme::calculateFile(
     crc64Nvme: $crc64Fast, 
     filename: 'path/to/hello-world'
@@ -116,7 +122,7 @@ This project uses [SemVer](https://semver.org), and has extensive code quality, 
 
 Examples:
 
-#### Building the shared library
+#### Building the shared `crc64fast-nvme` Rust library
 ```bash
 make build
 ``` 
