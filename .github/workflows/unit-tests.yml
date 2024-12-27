@@ -74,7 +74,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('**/Cargo.lock') }}
+          # Use the hash of the Makefile, since the git build version will be in the Makefile
+          key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('**/Makefile') }}
           restore-keys: |
             ${{ runner.os }}-crc64fast-nvme-
 
