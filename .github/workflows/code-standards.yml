@@ -3,7 +3,8 @@ name: Code Standards
 
 on:
   push:
-    branches: *
+    branches:
+      - *
   workflow_dispatch:
     # used when called manually. 'secrets' are passed in automagically
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
