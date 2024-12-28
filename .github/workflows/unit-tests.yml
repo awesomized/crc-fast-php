@@ -75,14 +75,29 @@ jobs:
         with:
           path: build
           # Use the hash of the Makefile, since the git build version will be in the Makefile
-          key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('**/Makefile') }}
+          key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('build/Makefle') }}
           restore-keys: |
             ${{ runner.os }}-crc64fast-nvme-
+
+      - name: Cache built crc32fast-lib shared library
+        id: crc32fast-lib-cache
+        uses: actions/cache@v4
+        with:
+          path: build
+          # Use the hash of the Makefile, since the git build version will be in the Makefile
+          key: ${{ runner.os }}-crc32fast-lib-${{ hashFiles('build/Makefle') }}
+          restore-keys: |
+            ${{ runner.os }}-crc32fast-lib-
 
       - name: Build crc64fast-nvme shared library
         if: steps.crc64fast-nvme-cache.outputs.cache-hit != 'true'
         id: build-crc64fast-nvme
-        run: make build
+        run: make build-crc64nvme
+
+      - name: Build crc32fast-lib shared library
+        if: steps.crc32fast-lib-cache.outputs.cache-hit != 'true'
+        id: build-crc32isohdlc
+        run: make build-crc32isohdlc
 
       - name: Run PHPUnit
         id: run-phpunit

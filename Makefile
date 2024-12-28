@@ -54,6 +54,14 @@ composer:
 build:
 	@cd build && make
 
+.PHONY: build-crc64nvme
+build-crc64nvme:
+	@cd build && make build-crc64nvme
+
+.PHONY: build-crc32isohdlc
+build-crc32isohdlc:
+	@cd build && make build-crc32isohdlc
+
 .PHONY: clean
 clean:
 	rm -rf vendor
