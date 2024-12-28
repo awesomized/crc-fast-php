@@ -73,28 +73,28 @@ jobs:
         id: crc64fast-nvme-cache
         uses: actions/cache@v4
         with:
-          path: build
+          path: build/crc64fast-nvme
           # Use the hash of the Makefile, since the git build version will be in the Makefile
           key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('build/Makefile') }}
           restore-keys: |
             ${{ runner.os }}-crc64fast-nvme-
 
-      - name: Cache built crc32fast-lib shared library
-        id: crc32fast-lib-cache
+      - name: Cache built crc32fast-lib-rust shared library
+        id: crc32fast-lib-rust-cache
         uses: actions/cache@v4
         with:
-          path: build
+          path: build/crc32fast-lib-rust
           # Use the hash of the Makefile, since the git build version will be in the Makefile
-          key: ${{ runner.os }}-crc32fast-lib-${{ hashFiles('build/Makefile') }}
+          key: ${{ runner.os }}-crc32fast-lib-rust-${{ hashFiles('build/Makefile') }}
           restore-keys: |
-            ${{ runner.os }}-crc32fast-lib-
+            ${{ runner.os }}-crc32fast-lib-rust-
 
       - name: Build crc64fast-nvme shared library
         if: steps.crc64fast-nvme-cache.outputs.cache-hit != 'true'
         id: build-crc64fast-nvme
         run: make build-crc64nvme
 
-      - name: Build crc32fast-lib shared library
+      - name: Build crc32fast-lib-rust shared library
         if: steps.crc32fast-lib-cache.outputs.cache-hit != 'true'
         id: build-crc32isohdlc
         run: make build-crc32isohdlc
