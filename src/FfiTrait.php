@@ -64,8 +64,14 @@ trait FfiTrait
             return self::$ffis[$id];
         }
 
+        if (!is_readable($headerFile)) {
+            throw new \InvalidArgumentException(
+                message: 'Header file ' . $headerFile . ' is not readable',
+            );
+        }
+
         $ffi = \FFI::load(
-            filename: __DIR__ . '/../' . $headerFile,
+            filename: $headerFile,
         );
 
         if (null === $ffi) {
@@ -79,11 +85,27 @@ trait FfiTrait
 
     public static function whichHeaderFile(): string
     {
-        return match (PHP_OS_FAMILY) {
+        $headerFile = match (PHP_OS_FAMILY) {
             self::OS_DARWIN => self::PREFIX_HEADER . '-darwin.h',
             self::OS_WINDOWS => self::PREFIX_HEADER . '-windows.h',
             default => self::PREFIX_HEADER . '-linux.h',
         };
+
+        // default non-vendor context
+        $headerDirectory = \dirname(__DIR__);
+
+        if (
+            1 === preg_match(
+                pattern: '/(.*)\/vendor\/([^\/]+\/[^\/]+)\/src/',
+                subject: __DIR__,
+                matches: $matches,
+            )
+        ) {
+            // in a vendor context
+            $headerDirectory = $matches[1];
+        }
+
+        return $headerDirectory . '/include/' . $headerFile;
     }
 
     public static function whichLibrary(): string

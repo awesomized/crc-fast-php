@@ -44,7 +44,7 @@ final class FfiTest extends TestCase
         $this->expectException(Exception::class);
 
         $code = file_get_contents(
-            __DIR__ . '/../../../../' . Crc64\Nvme\Ffi::whichHeaderFile(),
+            Crc64\Nvme\Ffi::whichHeaderFile(),
         );
 
         if (false === $code) {

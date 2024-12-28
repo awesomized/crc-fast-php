@@ -45,7 +45,7 @@ final class FfiTest extends TestCase
         $this->expectException(Exception::class);
 
         $code = file_get_contents(
-            __DIR__ . '/../../../../' . Crc32\IsoHdlc\Ffi::whichHeaderFile(),
+            Crc32\IsoHdlc\Ffi::whichHeaderFile(),
         );
 
         if (false === $code) {
