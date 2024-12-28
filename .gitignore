@@ -8,3 +8,4 @@
 .php-cs-fixer.cache
 vendor
 build
+scratch
