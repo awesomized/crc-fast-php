@@ -17,7 +17,7 @@ It's capable of generating checksums at >20-50 GiB/s, depending on the CPU. It i
 - The [NVMe specification](https://nvmexpress.org/wp-content/uploads/NVM-Express-NVM-Command-Set-Specification-1.0d-2023.12.28-Ratified.pdf)
 
 ## CRC-32/ISO-HDLC (aka "crc32")
-Uses the [crc32fast-lib]() Rust package (which exposes the [crc32fast](https://github.com/srijs/rust-crc32fast) Rust library as a C-compatible shared library).
+Uses the [crc32fast-lib](https://github.com/awesomized/crc32fast-lib-rust) Rust package (which exposes the [crc32fast](https://github.com/srijs/rust-crc32fast) Rust library as a C-compatible shared library).
 
 It's >10X faster than PHP's native [crc32](https://www.php.net/manual/en/function.crc32.php) implementation.
 
@@ -29,7 +29,7 @@ See the [change log](CHANGELOG.md).
 
 ## Requirements
 
-You'll need to have built and installed the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) shared Rust library, and possibly configured where and how to load it. (See [Usage](#Usage), below).
+You'll need to have built and installed the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) and [crc32fast-lib](https://github.com/awesomized/crc32fast-lib-rust) shared Rust libraries, and possibly configured where and how to load it. (See [Usage](#Usage), below).
 
 ## Installation
 
