@@ -1,5 +1,5 @@
 #define FFI_SCOPE "CRC64NVME"
-#define FFI_LIB "build/crc64fast-nvme/target/release/libcrc64fast_nvme.dylib"
+#define FFI_LIB "build/crc64fast-nvme/target/aarch64-unknown-linux-gnu/release/libcrc64fast_nvme.so"
 
 typedef struct DigestHandle DigestHandle;
 

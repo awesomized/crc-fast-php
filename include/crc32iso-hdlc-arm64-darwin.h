@@ -1,5 +1,5 @@
 #define FFI_SCOPE "CRC32ISOHDLC"
-#define FFI_LIB "build/crc32fast-lib-rust/target/release/libcrc32fast_lib.dll"
+#define FFI_LIB "build/crc32fast-lib-rust/target/aarch64-apple-darwin/release/libcrc32fast_lib.dylib"
 
 typedef struct HasherHandle HasherHandle;
 

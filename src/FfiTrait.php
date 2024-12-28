@@ -85,11 +85,12 @@ trait FfiTrait
 
     public static function whichHeaderFile(): string
     {
-        $headerFile = match (PHP_OS_FAMILY) {
-            self::OS_DARWIN => self::PREFIX_HEADER . '-darwin.h',
-            self::OS_WINDOWS => self::PREFIX_HEADER . '-windows.h',
-            default => self::PREFIX_HEADER . '-linux.h',
-        };
+        $headerFile = self::PREFIX_HEADER
+            . '-'
+            . php_uname('m')
+            . '-'
+            . strtolower(PHP_OS_FAMILY)
+            . '.h';
 
         // default non-vendor context
         $headerDirectory = \dirname(__DIR__);
@@ -110,10 +111,26 @@ trait FfiTrait
 
     public static function whichLibrary(): string
     {
+        // TODO: add more library names as needed
         return match (PHP_OS_FAMILY) {
             self::OS_DARWIN => self::PREFIX_LIB . '.dylib',
             self::OS_WINDOWS => self::PREFIX_LIB . '.dll',
             default => self::PREFIX_LIB . '.so',
+        };
+    }
+
+    public static function whichLibraryTarget(): string
+    {
+        // TODO: add more targets as needed
+        return match (php_uname('m')) {
+            'aarch64', 'arm64' => 'aarch64',
+            default => 'x86_64',
+        }
+        . '-'
+        . match (PHP_OS_FAMILY) {
+            self::OS_DARWIN => 'apple-darwin',
+            self::OS_WINDOWS => 'pc-windows-gnu',
+            default => 'unknown-linux-gnu',
         };
     }
 }

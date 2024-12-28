@@ -7,5 +7,6 @@
 .phpunit.cache
 .php-cs-fixer.cache
 vendor
-build
 scratch
+build/crc32fast-lib-rust
+build/crc64fast-nvme

@@ -24,7 +24,10 @@ final class FfiTest extends TestCase
 
         $ffi = Crc64\Nvme\Ffi::fromCode(
             code: '',
-            library: __DIR__ . '/../../../../build/crc64fast-nvme/target/release/' . Crc64\Nvme\Ffi::whichLibrary(),
+            library: \dirname(__DIR__, 4)
+            . '/build/crc64fast-nvme/target/'
+            . Crc64\Nvme\Ffi::whichLibraryTarget()
+            . '/release/' . Crc64\Nvme\Ffi::whichLibrary(),
         );
 
         /**
@@ -93,7 +96,10 @@ final class FfiTest extends TestCase
 
         $ffi = Crc64\Nvme\Ffi::fromCode(
             code: $code,
-            library: __DIR__ . '/../../../../build/crc64fast-nvme/target/release/' . Crc64\Nvme\Ffi::whichLibrary(),
+            library: \dirname(__DIR__, 4)
+            . '/build/crc64fast-nvme/target/'
+            . Crc64\Nvme\Ffi::whichLibraryTarget()
+            . '/release/' . Crc64\Nvme\Ffi::whichLibrary(),
         );
 
         $this->testFfiCalculateCrc64ShouldSucceed($ffi);

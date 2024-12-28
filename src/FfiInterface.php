@@ -72,4 +72,11 @@ interface FfiInterface
      * @return string The name of the shared library
      */
     public static function whichLibrary(): string;
+
+    /**
+     * Attempts to determine the correct library target for the current platform (e.g. 'aarch64-unknown-linux-gnu').
+     *
+     * @return string The target of the shared library for this platform
+     */
+    public static function whichLibraryTarget(): string;
 }

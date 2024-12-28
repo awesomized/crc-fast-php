@@ -23,9 +23,10 @@ final class FfiTest extends TestCase
 
         $ffi = Crc32\IsoHdlc\Ffi::fromCode(
             code: '',
-            library: __DIR__
-                . '/../../../../build/crc32fast-lib-rust/target/release/'
-                . Crc32\IsoHdlc\Ffi::whichLibrary(),
+            library: \dirname(__DIR__, 4)
+            . '/build/crc32fast-lib-rust/target/'
+            . Crc32\IsoHdlc\Ffi::whichLibraryTarget()
+            . '/release/' . Crc32\IsoHdlc\Ffi::whichLibrary(),
         );
 
         /**
@@ -94,9 +95,10 @@ final class FfiTest extends TestCase
 
         $ffi = Crc32\IsoHdlc\Ffi::fromCode(
             code: $code,
-            library: __DIR__
-                . '/../../../../build/crc32fast-lib-rust/target/release/'
-                . Crc32\IsoHdlc\Ffi::whichLibrary(),
+            library: \dirname(__DIR__, 4)
+            . '/build/crc32fast-lib-rust/target/'
+            . Crc32\IsoHdlc\Ffi::whichLibraryTarget()
+            . '/release/' . Crc32\IsoHdlc\Ffi::whichLibrary(),
         );
 
         $this->testFfiCalculateCrc32ShouldSucceed($ffi);

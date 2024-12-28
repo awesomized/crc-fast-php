@@ -1,6 +1,3 @@
-.PHONY: build
-build: build-crc64nvme build-crc32isohdlc
-
 .PHONY: validate
 validate: phpcs php-cs-fixer-check static-analysis test cli
 
@@ -53,22 +50,11 @@ composer:
 	# Psalm v5.26.1 doesn't like PHP-8.4
 	composer install --ignore-platform-req=php+
 
-.PHONY: build-directory
-build-directory:
-	@if [ ! -d "./build" ]; then mkdir build; fi
-
-.PHONY: build-crc64nvme
-build-crc64nvme: build-directory
-	@cd build && (if [ ! -d "./crc64fast-nvme" ]; then git clone https://github.com/awesomized/crc64fast-nvme.git; fi || true)
-	@cd build/crc64fast-nvme && git fetch && git checkout 1.1.0
-	@cd build/crc64fast-nvme && cargo build --release
-
-.PHONY: build-crc32isohdlc
-build-crc32isohdlc: build-directory
-	@cd build && (if [ ! -d "./crc32fast-lib-rust" ]; then git clone https://github.com/awesomized/crc32fast-lib-rust.git; fi || true)
-	@cd build/crc32fast-lib-rust && git fetch && git checkout 1.0.0
-	@cd build/crc32fast-lib-rust && cargo build --release
+.PHONY: build
+build:
+	@cd build && make
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf vendor
+	cd make && make clean
