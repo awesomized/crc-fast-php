@@ -16,24 +16,30 @@ final class Computer implements Checksums\CrcInterface
 {
     use Checksums\ChecksumTrait;
 
-    private FFI\CData $hasherHandle;
+    private readonly FFI $crc32IsoHdlc;
+
+    private readonly FFI\CData $hasherHandle;
+
+    private static ?FFI $ffiAuto = null;
 
     /**
-     * @param FFI $crc32IsoHdlc The FFI instance for the CRC-32 IEEE library.
+     * @param FFI|null $crc32IsoHdlc The FFI instance for the CRC-32 IEEE library.
      *
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        private readonly FFI $crc32IsoHdlc,
+        ?FFI $crc32IsoHdlc = null,
     ) {
+        $this->crc32IsoHdlc = $crc32IsoHdlc ?? self::getFfi();
+
         try {
             /**
-             * @var FFI\CData $digestHandle
+             * @var FFI\CData $hasherHandle
              *
              * @psalm-suppress UndefinedMethod - from FFI, we'll catch the Exception if the method is missing
              */
             // @phpstan-ignore-next-line
-            $digestHandle = $this->crc32IsoHdlc->hasher_new();
+            $hasherHandle = $this->crc32IsoHdlc->hasher_new();
         } catch (FFI\Exception $e) {
             throw new \InvalidArgumentException(
                 message: 'Could not create a new Hasher handle.'
@@ -42,7 +48,7 @@ final class Computer implements Checksums\CrcInterface
             );
         }
 
-        $this->hasherHandle = $digestHandle;
+        $this->hasherHandle = $hasherHandle;
     }
 
     public function write(
@@ -91,5 +97,17 @@ final class Computer implements Checksums\CrcInterface
             '%08x',
             $crc32,
         );
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    protected static function getFfi(): FFI
+    {
+        if (null !== self::$ffiAuto) {
+            return self::$ffiAuto;
+        }
+
+        return self::$ffiAuto = Checksums\Crc32\IsoHdlc\Ffi::fromAuto();
     }
 }

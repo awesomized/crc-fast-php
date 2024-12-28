@@ -18,7 +18,11 @@ final class Computer implements Checksums\CrcInterface
 {
     use Checksums\ChecksumTrait;
 
-    private FFI\CData $digestHandle;
+    private readonly FFI $crc64Nvme;
+
+    private readonly FFI\CData $digestHandle;
+
+    private static ?FFI $ffiAuto = null;
 
     /**
      * @param FFI $crc64Nvme The FFI instance for the CRC-64 NVMe library.
@@ -26,8 +30,10 @@ final class Computer implements Checksums\CrcInterface
      * @throws \InvalidArgumentException
      */
     public function __construct(
-        private readonly FFI $crc64Nvme,
+        ?FFI $crc64Nvme = null,
     ) {
+        $this->crc64Nvme = $crc64Nvme ?? self::getFfi();
+
         try {
             /**
              * @var FFI\CData $digestHandle
@@ -93,5 +99,17 @@ final class Computer implements Checksums\CrcInterface
             '%016x',
             $crc64,
         );
+    }
+
+    /**
+     * @throws \InvalidArgumentException
+     */
+    protected static function getFfi(): FFI
+    {
+        if (null !== self::$ffiAuto) {
+            return self::$ffiAuto;
+        }
+
+        return self::$ffiAuto = Checksums\Crc64\Nvme\Ffi::fromAuto();
     }
 }

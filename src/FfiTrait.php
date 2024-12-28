@@ -17,6 +17,20 @@ trait FfiTrait
      */
     private static array $ffis = [];
 
+    /**
+     * @throws \InvalidArgumentException
+     */
+    public static function fromAuto(): \FFI
+    {
+        try {
+            return self::fromPreloadScope();
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
+        return self::fromHeaderFile();
+    }
+
     public static function fromCode(
         string $code,
         ?string $library = null,

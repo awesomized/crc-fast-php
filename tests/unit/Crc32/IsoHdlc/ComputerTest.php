@@ -22,7 +22,7 @@ final class ComputerTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->ffi = Crc32\IsoHdlc\Ffi::fromHeaderFile();
+        $this->ffi = Crc32\IsoHdlc\Ffi::fromAuto();
     }
 
     /**
@@ -63,7 +63,6 @@ final class ComputerTest extends TestCase
     public function testCalculateHelloWorldShouldSucceed(): void
     {
         $crc64 = Crc32\IsoHdlc\Computer::calculate(
-            ffi: $this->ffi,
             string: Definitions::HELLO_WORLD,
         );
 
@@ -82,7 +81,6 @@ final class ComputerTest extends TestCase
     public function testCalculateFileHelloWorldShouldSucceed(): void
     {
         $crc64 = Crc32\IsoHdlc\Computer::calculateFile(
-            ffi: $this->ffi,
             filename: Definitions::HELLO_WORLD_FILE,
         );
 
@@ -105,7 +103,6 @@ final class ComputerTest extends TestCase
     public function testCalculateBinaryDataShouldSucceed(): void
     {
         $crc64 = Crc32\IsoHdlc\Computer::calculate(
-            ffi: $this->ffi,
             string: 0x00 . random_bytes(1024 * 1024),
         );
 
@@ -120,9 +117,7 @@ final class ComputerTest extends TestCase
      */
     public function testCalculateChunkedDataShouldSucceed(): void
     {
-        $crc64Nvme = new Crc32\IsoHdlc\Computer(
-            crc32IsoHdlc: $this->ffi,
-        );
+        $crc64Nvme = new Crc32\IsoHdlc\Computer();
 
         $crc64Nvme->write('hello, ');
         $crc64Nvme->write('world!');
@@ -142,7 +137,6 @@ final class ComputerTest extends TestCase
     public function testCalculateCheckValueShouldMatch(): void
     {
         $crc32 = Crc32\IsoHdlc\Computer::calculate(
-            ffi: $this->ffi,
             string: Definitions::CHECK_INPUT,
         );
 
@@ -163,7 +157,6 @@ final class ComputerTest extends TestCase
         self::assertSame(
             dechex(crc32(Definitions::HELLO_WORLD)),
             Crc32\IsoHdlc\Computer::calculate(
-                ffi: $this->ffi,
                 string: Definitions::HELLO_WORLD,
             ),
         );
@@ -171,7 +164,6 @@ final class ComputerTest extends TestCase
         self::assertSame(
             dechex(crc32(Definitions::CHECK_INPUT)),
             Crc32\IsoHdlc\Computer::calculate(
-                ffi: $this->ffi,
                 string: Definitions::CHECK_INPUT,
             ),
         );

@@ -39,14 +39,69 @@ Use [Composer](https://getcomposer.org) to install this library (note the [Requi
 composer require awesomized/crc-fast
 ```
 
+## Configuration
+[FFI ini](https://www.php.net/manual/en/ffi.configuration.php) settings must be configured properly for your environment.
+
+Optionally, opcache [preloading](https://www.php.net/manual/en/ffi.examples-complete.php) can also be used as an optimization.
 
 ## Usage
 
 Examples are for `CRC-64/NVME`, but `CRC-32/ISO-HDLC` is nearly identical, just in a different namespace (`Awesomized\Checksums\Crc32\IsoHdlc`).
 
-### Creating the CRC-64/NVME FFI object 
+Make sure you have the correct header file(s) for your CPU architecture and OS in [/include](include) for your project (e.g., [include/crc64nvme-aarch64-linux.h](include/crc64nvme-aarch64-linux.h)) which points to the correct shared library for your environment.
 
-A [helper FFI Class](src/Ffi.php) is provided, which supplies many ways to easily create an FFI object for the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) shared library:
+### Calculate CRC-64/NVME checksums:
+
+```php
+use Awesomized\Checksums\Crc64\Nvme;
+
+// calculate the checksum of a string
+$checksum = Nvme\Computer::calculate(
+    string: 'hello, world!'
+    // optionally inject a different FFI here
+); // f8046e40c403f1d0
+
+// calculate the checksum of a file, which will chunk through the file optimally,
+// limiting RAM usage and maximizing throughput
+$checksum = Nvme\Computer::calculateFile(
+    filename: 'path/to/hello-world'
+    // optionally inject a different FFI here
+); // f8046e40c403f1d0
+```
+
+### Calculate CRC-64/NVME checksums with a Digest for intermittent / streaming / etc workloads:
+
+```php
+use Awesomized\Checksums\Crc64\Nvme;
+
+$crc64Digest = new Nvme\Computer(
+    // optionally inject a different FFI here
+);
+
+// write some data to the digest
+$crc64Digest->write('hello,');
+
+// write some more data to the digest
+$crc64Digest->write(' world!');
+
+// calculate the entire digest
+$checksum = $crc64Digest->sum(); // f8046e40c403f1d0
+```
+
+### Creating an CRC-64/NVME FFI object 
+
+Alternatively, you can create an FFI object directly, and inject it into the `Computer` classes:
+
+#### - Via automagic loading via preloading and/or header files (recommended for most use cases):
+
+```php
+use Awesomized\Checksums\Crc64\Nvme;
+
+// uses the opcache preloaded shared library, if possible, otherwise uses the header file
+$crc64Fast = Nvme\Ffi::fromAuto();
+```
+
+Alternatively, a [helper FFI Class](src/Ffi.php) is provided, which supplies many ways to easily create an FFI object for the [crc64fast-nvme](https://github.com/awesomized/crc64fast-nvme) shared library:
 
 #### - Via [preloaded](https://www.php.net/manual/en/ffi.examples-complete.php) shared library (recommended for any long-running workloads, such as web requests):
 
@@ -67,7 +122,7 @@ use Awesomized\Checksums\Crc64\Nvme;
 
 // uses the FFI_LIB and FFI_SCOPE definitions in the header file
 $crc64Fast = Nvme\Ffi::fromHeaderFile(
-    headerFile: 'path/to/crc64fast_nvme.h', // optional, can likely be inferred from the OS
+    headerFile: 'path/to/crc64nvme-ARCH-OS.h', // optional, can likely be inferred from the OS
 );
 ```
 
@@ -86,49 +141,7 @@ $crc64Fast = Nvme\Ffi::fromCode(
     library: 'libcrc64fast_nvme.so',
 );
 ```
-### Using the CRC-64/NVME FFI object
 
-#### Calculate CRC-64/NVME checksums:
-
-```php
-use Awesomized\Checksums\Crc64\Nvme;
-
-/** @var \FFI $crc64Fast */
-
-// calculate the checksum of a string
-$checksum = Nvme\Computer::calculate(
-    ffi: $crc64Fast, 
-    string: 'hello, world!'
-); // f8046e40c403f1d0
-
-// calculate the checksum of a file, which will chunk through the file optimally,
-// limiting RAM usage and maximizing throughput
-$checksum = Nvme\Computer::calculateFile(
-    ffi: $crc64Fast, 
-    filename: 'path/to/hello-world'
-); // f8046e40c403f1d0
-```
-
-#### Calculate CRC-64/NVME checksums with a Digest for intermittent / streaming / etc workloads:
-
-```php
-use Awesomized\Checksums\Crc64\Nvme;
-
-/** @var \FFI $crc64FastNvme */
-
-$crc64Digest = new Nvme\Computer(
-    crc64Nvme: $crc64FastNvme,
-);
-
-// write some data to the digest
-$crc64Digest->write('hello,');
-
-// write some more data to the digest
-$crc64Digest->write(' world!');
-
-// calculate the entire digest
-$checksum = $crc64Digest->sum(); // f8046e40c403f1d0
-```
 
 ## Examples
 
@@ -140,16 +153,17 @@ This project uses [SemVer](https://semver.org), and has extensive coding standar
 
 Examples:
 
-#### Building the shared `crc64fast-nvme` Rust library for local development and testing
+#### Build, validate, and test everything:
+```bash
+make
+```
+
+#### Building the shared Rust libraries for local development and testing
 ```bash
 make build
-``` 
-#### Validating PHP code
-```bash
-make validate
-``` 
+```
 
-#### Repairing PHP code quality issues
+#### Repairing PHP coding standards issues
 ```bash
 make repair
 ```

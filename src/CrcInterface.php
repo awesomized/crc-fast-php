@@ -26,8 +26,8 @@ interface CrcInterface
     /**
      * Calculates the CRC checksum for a string.
      *
-     * @param FFI    $ffi    The FFI instance for the CRC library.
-     * @param string $string The string to calculate the CRC checksum for.
+     * @param string   $string The string to calculate the CRC checksum for.
+     * @param FFI|null $ffi    The FFI instance for the CRC library.
      *
      * @return string The calculated CRC checksum as a hexadecimal string (due to signed large int issues in PHP for
      *                64-bit results).
@@ -36,17 +36,17 @@ interface CrcInterface
      * @throws \RuntimeException
      */
     public static function calculate(
-        FFI $ffi,
         string $string,
+        ?FFI $ffi = null,
     ): string;
 
     /**
      * Calculates the CRC checksum for a file.
      *
-     * @param FFI         $ffi           The FFI instance for the CRC library.
      * @param string      $filename      The file or URL.
      * @param int<1, max> $readChunkSize The size of the chunks to read from the file. Adjust as necessary for your
      *                                   environment.
+     * @param FFI|null    $ffi           The FFI instance for the CRC library.
      *
      * @return string The calculated CRC checksum as a hexadecimal string (due to signed large int issues in PHP for
      *                64-bit results).
@@ -55,9 +55,9 @@ interface CrcInterface
      * @throws \RuntimeException
      */
     public static function calculateFile(
-        FFI $ffi,
         string $filename,
         int $readChunkSize = self::READ_CHUNK_SIZE_DEFAULT,
+        ?FFI $ffi = null,
     ): string;
 
     /**

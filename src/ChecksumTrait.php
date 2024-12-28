@@ -12,9 +12,13 @@ use FFI;
 trait ChecksumTrait
 {
     public static function calculate(
-        FFI $ffi,
         string $string,
+        ?FFI $ffi = null,
     ): string {
+        if (null === $ffi) {
+            $ffi = self::getFfi();
+        }
+
         return (new self($ffi))
             ->write(
                 string: $string,
@@ -23,10 +27,14 @@ trait ChecksumTrait
     }
 
     public static function calculateFile(
-        FFI $ffi,
         string $filename,
         int $readChunkSize = self::READ_CHUNK_SIZE_DEFAULT,
+        ?FFI $ffi = null,
     ): string {
+        if (null === $ffi) {
+            $ffi = self::getFfi();
+        }
+
         $handle = fopen(
             filename: $filename,
             mode: 'rb',
@@ -62,4 +70,6 @@ trait ChecksumTrait
 
         return $computer->sum();
     }
+
+    abstract protected static function getFfi(): FFI;
 }
