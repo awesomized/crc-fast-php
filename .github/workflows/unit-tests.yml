@@ -75,7 +75,7 @@ jobs:
         with:
           path: build
           # Use the hash of the Makefile, since the git build version will be in the Makefile
-          key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('build/Makefle') }}
+          key: ${{ runner.os }}-crc64fast-nvme-${{ hashFiles('build/Makefile') }}
           restore-keys: |
             ${{ runner.os }}-crc64fast-nvme-
 
@@ -85,7 +85,7 @@ jobs:
         with:
           path: build
           # Use the hash of the Makefile, since the git build version will be in the Makefile
-          key: ${{ runner.os }}-crc32fast-lib-${{ hashFiles('build/Makefle') }}
+          key: ${{ runner.os }}-crc32fast-lib-${{ hashFiles('build/Makefile') }}
           restore-keys: |
             ${{ runner.os }}-crc32fast-lib-
 
