@@ -7,6 +7,7 @@ namespace Awesomized\Checksums\tests\unit\Crc64\Nvme;
 use Awesomized\Checksums\Crc64;
 use Awesomized\Checksums\tests\unit\Definitions;
 use FFI;
+use FFI\Exception;
 use PHPUnit\Framework\TestCase;
 use Random\RandomException;
 
@@ -19,6 +20,7 @@ final class ComputerTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
+     * @throws Exception
      */
     protected function setUp(): void
     {
@@ -27,11 +29,11 @@ final class ComputerTest extends TestCase
 
     /**
      * @throws \InvalidArgumentException
-     * @throws \FFI\Exception
+     * @throws Exception
      */
     public function testConstructorInvalidLibraryShouldFail(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(Exception::class);
 
         $ffi = \FFI::cdef();
 
@@ -44,12 +46,13 @@ final class ComputerTest extends TestCase
      * @depends testConstructorInvalidLibraryShouldFail
      *
      * @throws \InvalidArgumentException
+     * @throws Exception
      */
     public function testConstructorValidLibraryShouldSucceed(): void
     {
         $this->expectNotToPerformAssertions();
 
-        $crc64Nvme = new Crc64\Nvme\Computer(
+        new Crc64\Nvme\Computer(
             crc64Nvme: $this->ffi,
         );
     }
@@ -59,6 +62,7 @@ final class ComputerTest extends TestCase
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws Exception
      */
     public function testCalculateHelloWorldShouldSucceed(): void
     {
@@ -77,6 +81,7 @@ final class ComputerTest extends TestCase
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws Exception
      */
     public function testCalculateFileHelloWorldShouldSucceed(): void
     {
@@ -99,6 +104,7 @@ final class ComputerTest extends TestCase
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      * @throws RandomException
+     * @throws Exception
      */
     public function testCalculateBinaryDataShouldSucceed(): void
     {
@@ -114,6 +120,7 @@ final class ComputerTest extends TestCase
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws Exception
      */
     public function testCalculateChunkedDataShouldSucceed(): void
     {
@@ -133,6 +140,7 @@ final class ComputerTest extends TestCase
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws Exception
      */
     public function testCalculateCheckValueShouldMatch(): void
     {

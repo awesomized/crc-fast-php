@@ -17,9 +17,6 @@ trait FfiTrait
      */
     private static array $ffis = [];
 
-    /**
-     * @throws \InvalidArgumentException
-     */
     public static function fromAuto(): \FFI
     {
         try {

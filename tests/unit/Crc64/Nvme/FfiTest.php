@@ -70,6 +70,7 @@ final class FfiTest extends TestCase
      * @depends testFfiFromCodeInvalidLibraryShouldFail
      *
      * @throws \InvalidArgumentException
+     * @throws Exception
      */
     public function testFfiFromHeaderInvalidHeaderShouldFail(): void
     {
@@ -132,7 +133,7 @@ final class FfiTest extends TestCase
 
         try {
             $ffi = Crc64\Nvme\Ffi::fromPreloadScope();
-        } catch (\FFI\Exception $e) {
+        } catch (Exception $e) {
             self::markTestSkipped("FFI instance doesn't appear to be preloaded.");
         }
 

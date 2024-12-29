@@ -6,6 +6,7 @@ namespace Awesomized\Checksums;
 
 use Awesomized\Checksums;
 use FFI;
+use FFI\Exception;
 
 /**
  * A common Interface for CRC checksum calculations via FFI (Foreign Function Interface) libraries.
@@ -34,6 +35,7 @@ interface CrcInterface
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws Exception
      */
     public static function calculate(
         string $string,
@@ -53,6 +55,7 @@ interface CrcInterface
      *
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
+     * @throws Exception
      */
     public static function calculateFile(
         string $filename,

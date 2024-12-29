@@ -69,6 +69,7 @@ final class FfiTest extends TestCase
      * @depends testFfiFromCodeInvalidLibraryShouldFail
      *
      * @throws \InvalidArgumentException
+     * @throws \FFI\Exception
      */
     public function testFfiFromHeaderInvalidHeaderShouldFail(): void
     {

@@ -23,6 +23,12 @@ interface FfiInterface
     public const string OS_WINDOWS = 'Windows';
 
     /**
+     * @throws \InvalidArgumentException
+     * @throws Exception
+     */
+    public static function fromAuto(): \FFI;
+
+    /**
      * Creates a new FFI instance from the given C declarations and library name.
      *
      * @param string      $code    The C declarations
@@ -43,6 +49,8 @@ interface FfiInterface
      * @link https://www.php.net/manual/en/ffi.examples-complete.php
      *
      * @param string $ffiScopeName The FFI_SCOPE used during preloading
+     *
+     * @throws Exception
      */
     public static function fromPreloadScope(
         string $ffiScopeName = self::SCOPE_DEFAULT,
@@ -54,6 +62,7 @@ interface FfiInterface
      * @param string $headerFile The C header file
      *
      * @throws \InvalidArgumentException
+     * @throws Exception
      */
     public static function fromHeaderFile(
         string $headerFile = '',
